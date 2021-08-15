@@ -15,7 +15,7 @@ class Repository
         try
         {
             mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
-            $this->mySqli = new \mysqli('localhost','bermoo_store','com.amirhosseinemadi.store','bermoo_store');
+            $this->mySqli = new \mysqli('localhost','*','*','*');
             if ($this->mySqli->connect_error)
             {
                 die('Connection failed between server and database');
