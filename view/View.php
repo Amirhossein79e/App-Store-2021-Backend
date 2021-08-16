@@ -28,7 +28,7 @@ class View
         {
             $result = $this->controller->initToken($data);
             $b64 = base64_encode($result);
-            if (strlen($b64) > 0)
+            if (strlen($b64) > 3)
             {
                 echo $b64;
             }else
@@ -48,7 +48,7 @@ class View
         {
             $result = $this->controller->syncToken($data);
             $b64 = base64_encode($result);
-            if (strlen($b64) > 0)
+            if (strlen($b64) > 3)
             {
                 echo $b64;
             }else
@@ -62,27 +62,63 @@ class View
     }
 
 
-    public function signUpUser(string $mail,string $password,string $username,string $token)
+    public function signUpUser(string $data)
     {
-        $result = $this->repository->signUpUser($mail,$password,$username,$token);
-        $this->repository->closeDb();
-        return $result;
+        try
+        {
+            $result = $this->controller->signUpUser($data);
+            $b64 = base64_encode($result);
+            if (strlen($b64) > 3)
+            {
+                echo $b64;
+            }else
+            {
+                $this->onError();
+            }
+        }catch (\Exception $exception)
+        {
+            $this->onError();
+        }
     }
 
 
-    public function signInUser(string $mail,string $password)
+    public function signInUser(string $data)
     {
-        $result = $this->repository->signInUser($mail,$password);
-        $this->repository->closeDb();
-        return $result;
+        try
+        {
+            $result = $this->controller->signInUser($data);
+            $b64 = base64_encode($result);
+            if (strlen($b64) > 3)
+            {
+                echo $b64;
+            }else
+            {
+                $this->onError();
+            }
+        }catch (\Exception $exception)
+        {
+            $this->onError();
+        }
     }
 
 
-    public function syncUser(string $access,string $token)
+    public function syncUser(string $data)
     {
-        $result = $this->repository->syncUser($access,$token);
-        $this->repository->closeDb();
-        return $result;
+        try
+        {
+            $result = $this->controller->syncUser($data);
+            $b64 = base64_encode($result);
+            if (strlen($b64) > 3)
+            {
+                echo $b64;
+            }else
+            {
+                $this->onError();
+            }
+        }catch (\Exception $exception)
+        {
+            $this->onError();
+        }
     }
 
 }

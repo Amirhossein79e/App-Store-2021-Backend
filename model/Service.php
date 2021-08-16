@@ -39,7 +39,7 @@ class Service extends Repository
     }
 
 
-    public function signInUser(string $mail,string $password)
+    public function signInUser(string $mail,string $password) : string
     {
         $result = $this->repository->signInUser($mail,$password);
         $this->repository->closeDb();
@@ -47,7 +47,7 @@ class Service extends Repository
     }
 
 
-    public function syncUser(string $access,string $token)
+    public function syncUser(string $access,string $token) : string
     {
         $result = $this->repository->syncUser($access,$token);
         $this->repository->closeDb();

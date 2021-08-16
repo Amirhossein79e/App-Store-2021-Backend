@@ -19,9 +19,9 @@ class Controller
     }
 
 
-    private function calculateData(string $keyData, string $requestCode, string $data)
+    private function calculateData(string $keyData, string $responseCode, string $data)
     {
-        $array = array('responseCode' => $requestCode, 'data' => $data);
+        $array = array('responseCode' => $responseCode, 'data' => $data);
         return $this->securityManager->encryptAes($keyData,json_encode($array,JSON_UNESCAPED_UNICODE));
     }
 
@@ -83,23 +83,105 @@ class Controller
     {
         $decrypted = json_decode($this->securityManager->decryptAes($data),true);
 
-        filter_var('aa',FILTER_VALIDATE_EMAIL);
+        if ($decrypted != null && filter_var($decrypted['mail'],FILTER_VALIDATE_EMAIL) && strlen($decrypted['password']) >= 8 && strlen($decrypted['username']) > 0 && strlen($decrypted['token']) > 100 && strlen($decrypted['token']) < 450)
+        {
+            $result = $this->service->signUpUser($decrypted['mail'],$decrypted['password'],$decrypted['username'],$decrypted['token']);
+            settype($result,'string');
+            switch ($result)
+            {
+                case '-1':
+                    $mainResult = -1;
+                    $message = 'فرایند با خطا مواجه شد (خطای سیستمی)';
+                    break;
+
+                case '0':
+                    $mainResult = 0;
+                    $message = 'ایمیل وارد شده در سیستم موجود می باشد . لطفا ایمیل دیگری وارد نمایید';
+                    break;
+
+                default:
+                    $mainResult = 1;
+                    $message = $result;
+                    break;
+            }
+
+        }else
+        {
+            $mainResult = 0;
+            $message = "پارامتر های ارسالی نا معتبر است";
+        }
+
+        return $this->calculateData($data,$mainResult,$message);
     }
 
 
-    public function signInUser(string $mail,string $password)
+    public function signInUser(string $data) : string
     {
-        $result = $this->repository->signInUser($mail,$password);
-        $this->repository->closeDb();
-        return $result;
+        $decrypted = json_decode($this->securityManager->decryptAes($data),true);
+
+        if ($decrypted != null && filter_var($decrypted['mail'],FILTER_VALIDATE_EMAIL) && strlen($decrypted['password']) >= 8)
+        {
+            $result = $this->service->signInUser($decrypted['mail'],$decrypted['password']);
+            settype($result,'string');
+            switch ($result)
+            {
+                case '-1':
+                    $mainResult = -1;
+                    $message = 'فرایند با خطا مواجه شد (خطای سیستمی)';
+                    break;
+
+                case '0':
+                    $mainResult = 0;
+                    $message = 'رمز عبور وارد شده صحیح نیست و یا ایمیل وارد شده در سیستم وجود ندارد';
+                    break;
+
+                default:
+                    $mainResult = 1;
+                    $message = $result;
+                    break;
+            }
+        }else
+        {
+            $mainResult = 0;
+            $message = "پارامتر های ارسالی نا معتبر است";
+        }
+
+        return $this->calculateData($data,$mainResult,$message);
     }
 
 
-    public function syncUser(string $access,string $token)
+    public function syncUser(string $data) : string
     {
-        $result = $this->repository->syncUser($access,$token);
-        $this->repository->closeDb();
-        return $result;
+        $decrypted = json_decode($this->securityManager->decryptAes($data),true);
+
+        if ($decrypted != null && strlen($decrypted['access']) > 80 && strlen($decrypted['access']) < 96 && strlen($decrypted['token']) > 100 && strlen($decrypted['token']) < 450)
+        {
+           $result = $this->service->syncUser($decrypted['access'],$decrypted);
+            settype($result,'string');
+            switch ($result)
+            {
+                case '-1':
+                    $mainResult = -1;
+                    $message = 'فرایند با خطا مواجه شد (خطای سیستمی)';
+                    break;
+
+                case '0':
+                    $mainResult = 0;
+                    $message = "پارامتر های ارسالی نا معتبر است";
+                    break;
+
+                case '1':
+                    $mainResult = 1;
+                    $message = 'فرایند با موفقیت اجرا شد';
+                    break;
+            }
+        }else
+        {
+            $mainResult = 0;
+            $message = "پارامتر های ارسالی نا معتبر است";
+        }
+
+        return $this->calculateData($data,$mainResult,$message);
     }
 
 }

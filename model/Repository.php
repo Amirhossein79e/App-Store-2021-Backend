@@ -147,7 +147,7 @@ class Repository
     }
 
 
-    protected function syncUser(string $access,string $token)
+    protected function syncUser(string $access,string $token) : string
     {
         $mainResult = -1;
         $stmt = new \mysqli_stmt($this->mySqli,'select * from user where access = ?;');
@@ -164,13 +164,16 @@ class Repository
                     $updateStmt->bind_param('ss', $token,$access);
                     if ($updateStmt->execute())
                     {
-                        $mainResult = 0;
-                    }
-                }else
+                        $mainResult = 1;
+                    }else
                     {
                         $mainResult = 0;
                     }
-                $updateStmt->close();
+                    $updateStmt->close();
+                }else
+                    {
+                        $mainResult = 1;
+                    }
             }
         }
 
