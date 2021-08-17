@@ -6,8 +6,6 @@ error_reporting(E_ALL);
 $method = $_POST['requestCode'];
 $data = str_replace(' ','+',$_POST['data']);
 
-echo strlen(base64_decode(base64_encode(openssl_random_pseudo_bytes(64))));
-
 if ($method != null && strlen($method) > 0 && $data != null && strlen($data) > 0)
 {
     $view = new view\View();
@@ -15,23 +13,23 @@ if ($method != null && strlen($method) > 0 && $data != null && strlen($data) > 0
 
     switch ($method)
     {
-        case 1:
+        case 100:
             $view->initToken($data);
             break;
 
-        case 2:
+        case 101:
             $view->syncToken($data);
             break;
 
-        case 3:
+        case 102:
             $view->signUpUser($data);
             break;
 
-        case 4:
+        case 103:
             $view->signInUser($data);
             break;
 
-        case 5:
+        case 104:
             $view->syncUser($data);
             break;
 

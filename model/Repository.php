@@ -43,41 +43,39 @@ class Repository
     {
         $deleteStmt = new \mysqli_stmt($this->mySqli,'delete from push where uid = ?');
         $deleteStmt->bind_param('s',$uid);
-        $deleteStmt->execute();
+        $success = $deleteStmt->execute();
         $deleteStmt->close();
 
-        $insertStmt = new \mysqli_stmt($this->mySqli,"insert into push(uid,token) values(?,?)");
-        $insertStmt->bind_param('ss',$uid,$token);
-        $iBool = $insertStmt->execute();
-        $insertStmt->close();
+        if ($success)
+        {
+            $insertStmt = new \mysqli_stmt($this->mySqli,'insert into push values(?,?)');
+            $insertStmt->bind_param('ss',$uid,$token);
+            $success = $insertStmt->execute();
+            $insertStmt->close();
+        }
 
-        return $iBool;
+        return $success;
     }
 
 
     protected function syncToken(string $uid,string $token) : bool
     {
-        $success = false;
-        $stmt = new \mysqli_stmt($this->mySqli,'select * from push where uid = ?');
+        $stmt = new \mysqli_stmt($this->mySqli,'select token from push where uid = ? limit 1');
         $stmt->bind_param('s',$uid);
-        $bool = $stmt->execute();
-        if ($bool)
+        $success = $stmt->execute();
+        if ($success)
         {
             $result = $stmt->get_result();
-            while ($row = $result->fetch_assoc())
+            $row = $result->fetch_assoc();
+            if ($row['token'] != $token)
             {
-                if ($row['token'] != $token)
-                {
-                    $updateStmt = new \mysqli_stmt($this->mySqli,'update push set token = ? where uid = ?');
-                    $updateStmt->bind_param('ss',$token,$uid);
-                    $success = $updateStmt->execute();
-                    $updateStmt->close();
-
-                }else
-                {
-                    $success = true;
-                }
-                break;
+                $updateStmt = new \mysqli_stmt($this->mySqli,'update push set token = ? where uid = ?');
+                $updateStmt->bind_param('ss',$token,$uid);
+                $success = $updateStmt->execute();
+                $updateStmt->close();
+            }else
+            {
+                $success = true;
             }
         }
 
@@ -88,20 +86,18 @@ class Repository
 
     protected function signUpUser(string $mail,string $password,string $username,string $token) : string
     {
-        $mainResult = -1;
-        $selectStmt = new \mysqli_stmt($this->mySqli,'select * from user where mail = ?');
+        $selectStmt = new \mysqli_stmt($this->mySqli,'select mail from user where mail = ?');
         $selectStmt->bind_param('s',$mail);
         $success = $selectStmt->execute();
         if ($success)
         {
             $result = $selectStmt->get_result();
-
             if ($result->num_rows > 0)
             {
                 $mainResult = 0;
             }else
             {
-                $insertStmt = new \mysqli_stmt($this->mySqli,'insert into user(mail,password,username,token,access) values(?,?,?,?,?)');
+                $insertStmt = new \mysqli_stmt($this->mySqli,'insert into user values(?,?,?,?,?)');
                 $hashPassword = $this->securityManager->encryptHash($this->securityManager->encryptHash($password));
                 $access = $this->securityManager->getRandomToken();
                 $insertStmt->bind_param('sssss',$mail,$hashPassword,$username,$token,$access);
@@ -113,6 +109,9 @@ class Repository
                     $mainResult = json_encode($array);
                 }
             }
+        }else
+        {
+            $mainResult = -1;
         }
 
         $selectStmt->close();
@@ -122,8 +121,7 @@ class Repository
 
     protected function signInUser(string $mail,string $password)
     {
-        $mainResult = -1;
-        $stmt = new \mysqli_stmt($this->mySqli,'select * from user where mail = ? and password = ?;');
+        $stmt = new \mysqli_stmt($this->mySqli,'select username,access from user where mail = ? and password = ? limit 1');
         $hashPassword = $this->securityManager->encryptHash($this->securityManager->encryptHash($password));
         $stmt->bind_param('ss',$mail,$hashPassword);
         $success = $stmt->execute();
@@ -140,6 +138,9 @@ class Repository
             {
                 $mainResult = 0;
             }
+        }else
+        {
+            $mainResult = -1;
         }
 
         $stmt->close();
@@ -149,32 +150,39 @@ class Repository
 
     protected function syncUser(string $access,string $token) : string
     {
-        $mainResult = -1;
-        $stmt = new \mysqli_stmt($this->mySqli,'select * from user where access = ?;');
+        $stmt = new \mysqli_stmt($this->mySqli,'select token from user where access = ? limit 1');
         $stmt->bind_param('s',$access);
         $success = $stmt->execute();
         if ($success)
         {
             $result = $stmt->get_result();
-            while ($row = $result->fetch_assoc())
+            if ($result->num_rows > 0)
             {
+                $row = $result->fetch_assoc();
                 if ($row['token'] != $token)
                 {
-                    $updateStmt = new \mysqli_stmt($this->mySqli, 'update user set token = ? where access = ?;');
+                    $updateStmt = new \mysqli_stmt($this->mySqli, 'update user set token = ? where access = ?');
                     $updateStmt->bind_param('ss', $token,$access);
-                    if ($updateStmt->execute())
+                    $success = $updateStmt->execute();
+                    if ($success)
                     {
                         $mainResult = 1;
                     }else
                     {
-                        $mainResult = 0;
+                        $mainResult = -1;
                     }
                     $updateStmt->close();
                 }else
-                    {
-                        $mainResult = 1;
-                    }
+                {
+                    $mainResult = 1;
+                }
+            }else
+            {
+                $mainResult = 1;
             }
+        }else
+        {
+            $mainResult = -1;
         }
 
         $stmt->close();
