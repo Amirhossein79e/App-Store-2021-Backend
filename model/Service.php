@@ -2,11 +2,11 @@
 
 
 namespace AppStore\model;
-require_once (__DIR__.DIRECTORY_SEPARATOR.'Repository.php');
+require_once (__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'autoload.php');
 
-class Service extends Repository
+class Service
 {
-    private $repository = null;
+    private $repository;
 
 
     public function __construct()

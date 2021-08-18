@@ -2,20 +2,21 @@
 
 
 namespace AppStore\model;
+require_once (__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'autoload.php');
 
 
 class CommentRepository extends Repository
 {
-    private $mySqli = null;
+    private $mySqli;
 
     public function __construct()
     {
         parent::__construct();
-        $this->repository = $this->getConnection();
+        $this->mySqli = $this->getConnection();
     }
 
 
-    protected function submitComment(string $access,string $detail,float $rate,string $packageName) : int
+    public function submitComment(string $access,string $detail,float $rate,string $packageName) : string
     {
         $selectStmt = new \mysqli_stmt($this->mySqli,'select access from comment where access = ? and package_name = ?');
         $selectStmt->bind_param('ss',$access,$packageName);
@@ -54,7 +55,7 @@ class CommentRepository extends Repository
     }
 
 
-    protected function deleteComment(string $access,string $packageName) : bool
+    public function deleteComment(string $access,string $packageName) : bool
     {
         $stmt = new \mysqli_stmt($this->mySqli,'delete from comment where access = ? and package_name = ?');
         $stmt->bind_param('ss',$access,$packageName);

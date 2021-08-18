@@ -2,13 +2,13 @@
 
 
 namespace AppStore\model;
-require_once (__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'utils'.DIRECTORY_SEPARATOR.'SecurityManager.php');
+require_once (__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'autoload.php');
 use AppStore\utils as utils;
 
 class Repository
 {
-    private $mySqli = null;
-    private $securityManager = null;
+    private $mySqli;
+    private $securityManager;
 
     public function __construct()
     {
@@ -39,7 +39,7 @@ class Repository
     }
 
 
-    protected function initToken(string $uid,string $token) : bool
+    public function initToken(string $uid,string $token) : bool
     {
         $deleteStmt = new \mysqli_stmt($this->mySqli,'delete from push where uid = ?');
         $deleteStmt->bind_param('s',$uid);
@@ -58,7 +58,7 @@ class Repository
     }
 
 
-    protected function syncToken(string $uid,string $token) : bool
+    public function syncToken(string $uid,string $token) : bool
     {
         $stmt = new \mysqli_stmt($this->mySqli,'select token from push where uid = ? limit 1');
         $stmt->bind_param('s',$uid);
@@ -84,7 +84,7 @@ class Repository
     }
 
 
-    protected function signUpUser(string $mail,string $password,string $username,string $token) : string
+    public function signUpUser(string $mail,string $password,string $username,string $token) : string
     {
         $selectStmt = new \mysqli_stmt($this->mySqli,'select mail from user where mail = ?');
         $selectStmt->bind_param('s',$mail);
@@ -119,7 +119,7 @@ class Repository
     }
 
 
-    protected function signInUser(string $mail,string $password)
+    public function signInUser(string $mail,string $password) : string
     {
         $stmt = new \mysqli_stmt($this->mySqli,'select username,access from user where mail = ? and password = ? limit 1');
         $hashPassword = $this->securityManager->encryptHash($this->securityManager->encryptHash($password));
@@ -148,7 +148,7 @@ class Repository
     }
 
 
-    protected function syncUser(string $access,string $token) : string
+    public function syncUser(string $access,string $token) : string
     {
         $stmt = new \mysqli_stmt($this->mySqli,'select token from user where access = ? limit 1');
         $stmt->bind_param('s',$access);
@@ -190,7 +190,7 @@ class Repository
     }
 
 
-    protected function closeDb()
+    public function closeDb()
     {
         $this->mySqli->close();
     }

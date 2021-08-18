@@ -1,0 +1,3 @@
+{"autoload": {
+  "classmap": ["model/","view/","controller/","utils/"]
+}}

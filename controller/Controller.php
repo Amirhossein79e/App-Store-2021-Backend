@@ -2,15 +2,13 @@
 
 
 namespace AppStore\controller;
-require_once (__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'model'.DIRECTORY_SEPARATOR.'Service.php');
-require_once (__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'utils'.DIRECTORY_SEPARATOR.'SecurityManager.php');
+require_once (__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'autoload.php');
 use AppStore\model as model , AppStore\utils as utils;
 
 class Controller
 {
-    private $service = null;
-    private $securityManager = null;
-
+    private $service;
+    private $securityManager;
 
     public function __construct()
     {
@@ -83,10 +81,9 @@ class Controller
     {
         $decrypted = json_decode($this->securityManager->decryptAes($data),true);
 
-        if ($decrypted != null && filter_var($decrypted['mail'],FILTER_VALIDATE_EMAIL) && strlen($decrypted['password']) >= 8 && strlen($decrypted['username']) > 0 && strlen($decrypted['token']) > 100 && strlen($decrypted['token']) < 450)
+        if ($decrypted != null && strlen($decrypted['mail']) > 0 &&filter_var($decrypted['mail'],FILTER_VALIDATE_EMAIL) && strlen($decrypted['password']) >= 8 && strlen($decrypted['username']) > 0 && strlen($decrypted['token']) > 100 && strlen($decrypted['token']) < 450)
         {
             $result = $this->service->signUpUser($decrypted['mail'],$decrypted['password'],$decrypted['username'],$decrypted['token']);
-            settype($result,'string');
             switch ($result)
             {
                 case '-1':
@@ -122,7 +119,6 @@ class Controller
         if ($decrypted != null && filter_var($decrypted['mail'],FILTER_VALIDATE_EMAIL) && strlen($decrypted['password']) >= 8)
         {
             $result = $this->service->signInUser($decrypted['mail'],$decrypted['password']);
-            settype($result,'string');
             switch ($result)
             {
                 case '-1':
@@ -157,7 +153,6 @@ class Controller
         if ($decrypted != null && strlen($decrypted['access']) > 80 && strlen($decrypted['access']) < 96 && strlen($decrypted['token']) > 100 && strlen($decrypted['token']) < 450)
         {
            $result = $this->service->syncUser($decrypted['access'],$decrypted);
-            settype($result,'string');
             switch ($result)
             {
                 case '-1':

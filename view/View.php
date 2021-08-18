@@ -2,12 +2,12 @@
 
 
 namespace AppStore\view;
-require_once (__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'controller'.DIRECTORY_SEPARATOR.'Controller.php');
+require_once (__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'autoload.php');
 use AppStore\controller as controller;
 
 class View
 {
-    private $controller = null;
+    private $controller;
 
     public function __construct()
     {
