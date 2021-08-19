@@ -6,6 +6,9 @@ error_reporting(E_ALL);
 $method = $_POST['requestCode'];
 $data = str_replace(' ','+',$_POST['data']);
 
+$repo = new \AppStore\model\AppRepository();
+$repo->getCategory();
+
 if ($method != null && strlen($method) > 0 && $data != null && strlen($data) > 0)
 {
     settype($method,'int');

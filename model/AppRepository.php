@@ -14,4 +14,77 @@ class AppRepository extends Repository
         parent::__construct();
         $this->mysqli = $this->getConnection();
     }
+
+
+    public function getCategory() : string
+    {
+        $stmt = new \mysqli_stmt($this->mysqli,'select * from category');
+        $success = $stmt->execute();
+        if ($success)
+        {
+            $array = array();
+            $result = $stmt->get_result();
+            while ($row = $result->fetch_assoc())
+            {
+                array_push($array,$row);
+            }
+            $mainResult = json_encode($array);
+        }
+        else
+        {
+            $mainResult = -1;
+        }
+
+        $stmt->close();
+        return $mainResult;
+    }
+
+
+    public function getApp(int $offset) : string
+    {
+        $stmt = new \mysqli_stmt($this->mysqli,'select * from app limit 25 offset '.$offset);
+        $success = $stmt->execute();
+        if ($success)
+        {
+            $array = array();
+            $result = $stmt->get_result();
+            while ($row = $result->fetch_assoc())
+            {
+                array_push($array,$row);
+            }
+            $mainResult = json_encode($array);
+        }
+        else
+        {
+            $mainResult = -1;
+        }
+
+        $stmt->close();
+        return $mainResult;
+    }
+
+
+    public function getAppByCategory(int $offset,string $category) : string
+    {
+        $stmt = new \mysqli_stmt($this->mysqli,'select * from app where category = ? limit 25 offset '.$offset);
+        $stmt->bind_param('s',$category);
+        $success = $stmt->execute();
+        if ($success)
+        {
+            $array = array();
+            $result = $stmt->get_result();
+            while ($row = $result->fetch_assoc())
+            {
+                array_push($array,$row);
+            }
+            $mainResult = json_encode($array);
+        }
+        else
+        {
+            $mainResult = -1;
+        }
+
+        $stmt->close();
+        return $mainResult;
+    }
 }
