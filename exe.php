@@ -3,17 +3,14 @@ require_once (__DIR__.DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'autoload
 use AppStore\view;
 error_reporting(E_ALL);
 
-$method = $_POST['requestCode'];
+$requestCode = $_POST['requestCode'];
 $data = str_replace(' ','+',$_POST['data']);
 
-$repo = new \AppStore\model\AppRepository();
-$repo->getCategory();
-
-if ($method != null && strlen($method) > 0 && $data != null && strlen($data) > 0)
+if ($requestCode != null && strlen($requestCode) > 0 && $data != null && strlen($data) > 0)
 {
-    settype($method,'int');
+    settype($requestCode,'int');
 
-    switch ($method)
+    switch ($requestCode)
     {
         case 100:
             $view = new view\View();
