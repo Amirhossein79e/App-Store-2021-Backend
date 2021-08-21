@@ -1,24 +1,32 @@
 <?php
 
 
-namespace AppStore\model;
+namespace AppStore\controller;
 require_once (__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'autoload.php');
+use AppStore\model as model , AppStore\utils as utils;
 
-class AppService
+class AppController
 {
-    private $repository;
+    private $service;
+    private $securityManager;
 
     public function __construct()
     {
-        $this->repository = new AppRepository();
+        $this->service = new model\AppService();
+        $this->securityManager = utils\SecurityManager::getInstance();
+    }
+
+
+    private function calculateData(string $keyData, string $responseCode, string $data)
+    {
+        $array = array('responseCode' => $responseCode, 'data' => $data);
+        return $this->securityManager->encryptAes($keyData,json_encode($array,JSON_UNESCAPED_UNICODE));
     }
 
 
     public function getCategories() : string
     {
-        $result = $this->repository->getCategories();
-        $this->repository->closeDb();
-        return $result;
+
     }
 
 
@@ -68,5 +76,4 @@ class AppService
         $this->repository->closeDb();
         return $result;
     }
-
 }

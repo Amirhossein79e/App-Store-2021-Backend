@@ -49,6 +49,7 @@ if ($requestCode != null && strlen($requestCode) > 0 && $data != null && strlen(
 
         default:
             $array = array('responseCode'=>-1,'message'=>'Incorrect requestCode');
+            echo json_encode($array);
     }
 }
 

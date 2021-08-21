@@ -119,7 +119,7 @@ class AppRepository extends Repository
     public function getTitlesSearch(string $query) : string
     {
         $stmt = new \mysqli_stmt($this->mysqli,'select name_fa,name_en from app where name_fa like %?% or name_en like %?% or tag like %?%');
-        $stmt->bind_param('ss',$query,$query,$query);
+        $stmt->bind_param('sss',$query,$query,$query);
         $success = $stmt->execute();
         if ($success)
         {
@@ -143,8 +143,8 @@ class AppRepository extends Repository
 
     public function getAppsSearch(string $query) : string
     {
-        $stmt = new \mysqli_stmt($this->mysqli,'select * from app where name_fa like %?% or name_en like %?% or tag like %?%');
-        $stmt->bind_param('ss',$query,$query,$query);
+        $stmt = new \mysqli_stmt($this->mysqli,'select package_name,name_fa,name_en,dev_fa,dev_en from app where name_fa like %?% or name_en like %?% or tag like %?%');
+        $stmt->bind_param('sss',$query,$query,$query);
         $success = $stmt->execute();
         if ($success)
         {
@@ -153,6 +153,51 @@ class AppRepository extends Repository
             while ($row = $result->fetch_assoc())
             {
                 array_push($array,$row);
+            }
+            $mainResult = json_encode($array);
+        }
+        else
+        {
+            $mainResult = -1;
+        }
+
+        $stmt->close();
+        return $mainResult;
+    }
+
+
+    public function getUpdates(array $packageNames) : string
+    {
+        $packages = '';
+        for ($i = 0;$i < count($packageNames);$i++)
+        {
+            if ($i < count($packageNames)-1)
+            {
+                $packages .= $packageNames[$i]['packageName'].',';
+            }else
+            {
+                $packages .= $packageNames[$i]['packageName'];
+            }
+        }
+
+        $stmt = new \mysqli_stmt($this->mysqli,'select package_name,name_fa,name_en,ver_code,ver_name from app where package_name in (?)');
+        $stmt->bind_param('s',$packages);
+        $success = $stmt->execute();
+        if ($success)
+        {
+            $array = array();
+            $result = $stmt->get_result();
+            if ($result->num_rows>0)
+            {
+                while ($row = $result->fetch_assoc())
+                {
+                    $key = array_search($row['packageName'],array_column($packageNames,'packageName'));
+                    $value = $packageNames[$key];
+                    if ($row['ver_code'] > $value['verCode'])
+                    {
+                        array_push($array,$row);
+                    }
+                }
             }
             $mainResult = json_encode($array);
         }
