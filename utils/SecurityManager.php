@@ -22,24 +22,24 @@ class SecurityManager
 
     private function getPrivateKey()
     {
-        $path = str_replace("utils","asset",__DIR__).DIRECTORY_SEPARATOR."bermooda.pfx";
+        $path = str_replace("utils","asset",__DIR__).DIRECTORY_SEPARATOR."*.pfx";
         $file = fopen($path,"r");
         $input = fread($file,filesize($path));
         fclose($file);
         $certificate = null;
-        openssl_pkcs12_read($input,$certificate,"com.amirhosseinemadi.store");
-        return openssl_get_privatekey($certificate['pkey'],'com.amirhosseinemadi.store');
+        openssl_pkcs12_read($input,$certificate,"*");
+        return openssl_get_privatekey($certificate['pkey'],'*');
     }
 
 
     private function getPublicKey()
     {
-        $path = str_replace("utils","asset",__DIR__)."\\"."bermooda.pfx";
+        $path = str_replace("utils","asset",__DIR__)."\\"."*.pfx";
         $file = fopen($path,"r");
         $input = fread($file,filesize($path));
         fclose($file);
         $certificate = null;
-        openssl_pkcs12_read($input,$certificate,'com.amirhosseinemadi.store');
+        openssl_pkcs12_read($input,$certificate,'*');
         return openssl_get_publickey($certificate['cert']);
     }
 
