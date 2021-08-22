@@ -37,6 +37,41 @@ if ($requestCode != null && strlen($requestCode) > 0 && $data != null && strlen(
             $view->syncUser($data);
             break;
 
+        case 200:
+            $view = new view\AppView();
+            $view->getCategories($data);
+            break;
+
+        case 201:
+            $view = new view\AppView();
+            $view->getApps($data);
+            break;
+
+        case 202:
+            $view = new view\AppView();
+            $view->getAppsByCategory($data);
+            break;
+
+        case 203:
+            $view = new view\AppView();
+            $view->getApp($data);
+            break;
+
+        case 204:
+            $view = new view\AppView();
+            $view->getTitlesSearch($data);
+            break;
+
+        case 205:
+            $view = new view\AppView();
+            $view->getAppsSearch($data);
+            break;
+
+        case 206:
+            $view = new view\AppView();
+            $view->getUpdates($data);
+            break;
+
         case 300:
             $view = new view\CommentView();
             $view->submitComment($data);
@@ -48,10 +83,9 @@ if ($requestCode != null && strlen($requestCode) > 0 && $data != null && strlen(
             break;
 
         default:
-            $array = array('responseCode'=>-1,'message'=>'Incorrect requestCode');
+            $array = array('responseCode'=>-1,'data'=>'Incorrect requestCode');
             echo json_encode($array);
     }
 }
-
 
 ?>

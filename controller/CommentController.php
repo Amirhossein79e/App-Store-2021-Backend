@@ -3,7 +3,7 @@
 
 namespace AppStore\controller;
 require_once (__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'autoload.php');
-use AppStore\model as model , AppStore\utils as utils;
+use AppStore\model, AppStore\utils;
 
 class CommentController
 {
@@ -17,15 +17,24 @@ class CommentController
     }
 
 
-    private function calculateData(string $keyData, string $responseCode, string $data)
+    private function calculateData(string $keyData, string $responseCode, string $data,bool $valid)
     {
         $array = array('responseCode' => $responseCode, 'data' => $data);
-        return $this->securityManager->encryptAes($keyData,json_encode($array,JSON_UNESCAPED_UNICODE));
+        if ($valid)
+        {
+            return $this->securityManager->encryptAes($keyData, json_encode($array, JSON_UNESCAPED_UNICODE));
+        }
+        else
+        {
+            return json_encode($array,JSON_UNESCAPED_UNICODE);
+        }
     }
 
 
     public function submitComment(string $data) : string
     {
+        if ($data != null && strlen($data) > 0 && strpos($data,'@') != false)
+        {
         $decrypted = json_decode($this->securityManager->decryptAes($data),true);
 
         if ($decrypted != null && strlen($decrypted['access']) > 80 && strlen($decrypted['access']) < 96 && $decrypted['rate'] > 0 && strlen($decrypted['packageName'] > 0))
@@ -54,12 +63,23 @@ class CommentController
             $message = 'پارامتر های ارسالی نا معتبر است';
         }
 
-        return $this->calculateData($data,$mainResult,$message);
+            $response = $this->calculateData($data,$mainResult,$message,true);
+
+        }else
+            {
+                $mainResult = 0;
+                $message = 'پارامتر های ارسالی نا معتبر است';
+                $response = $this->calculateData($data,$mainResult,$message,false);
+            }
+
+        return $response;
     }
 
 
     public function deleteComment(string $data) : string
     {
+        if ($data != null && strlen($data) > 0 && strpos($data,'@') != false)
+        {
         $decrypted = json_decode($this->securityManager->decryptAes($data),true);
 
         if ($decrypted != null && strlen($decrypted['access']) > 80 && strlen($decrypted['access']) < 96 && strlen($decrypted['packageName'] > 0))
@@ -80,6 +100,15 @@ class CommentController
             $message = 'پارامتر های ارسالی نا معتبر است';
         }
 
-        return $this->calculateData($data,$mainResult,$message);
+        $response = $this->calculateData($data,$mainResult,$message,true);
+
+        }else
+        {
+            $mainResult = 0;
+            $message = 'پارامتر های ارسالی نا معتبر است';
+            $response = $this->calculateData($data,$mainResult,$message,false);
+        }
+
+        return $response;
     }
 }

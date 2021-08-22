@@ -3,7 +3,7 @@
 
 namespace AppStore\view;
 require_once (__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'autoload.php');
-use AppStore\controller as controller;
+use AppStore\controller;
 
 class CommentView
 {

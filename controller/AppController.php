@@ -3,7 +3,7 @@
 
 namespace AppStore\controller;
 require_once (__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'autoload.php');
-use AppStore\model as model , AppStore\utils as utils;
+use AppStore\model, AppStore\utils;
 
 class AppController
 {
@@ -17,63 +17,293 @@ class AppController
     }
 
 
-    private function calculateData(string $keyData, string $responseCode, string $data)
+    private function calculateData(string $keyData, string $responseCode, string $data,bool $valid)
     {
         $array = array('responseCode' => $responseCode, 'data' => $data);
-        return $this->securityManager->encryptAes($keyData,json_encode($array,JSON_UNESCAPED_UNICODE));
+        if ($valid)
+        {
+            return $this->securityManager->encryptAes($keyData, json_encode($array, JSON_UNESCAPED_UNICODE));
+        }
+        else
+        {
+            return json_encode($array,JSON_UNESCAPED_UNICODE);
+        }
     }
 
 
-    public function getCategories() : string
+    public function getCategories(string $data) : string
     {
+        if ($data != null && strlen($data) > 0 && strpos($data,'@') != false)
+        {
+            $result = $this->service->getCategories();
+            switch ($result)
+            {
+                case "-1":
+                    $mainResult = -1;
+                    $message = 'فرایند با خطا مواجه شد (خطای سیستمی)';
+                    break;
 
+                default:
+                    $mainResult = 1;
+                    $message = $result;
+                    break;
+            }
+
+            $response = $this->calculateData($data,$mainResult,$message,true);
+
+        }else
+        {
+            $mainResult = 0;
+            $message = 'پارامتر های ارسالی نا معتبر است';
+            $response = $this->calculateData($data,$mainResult,$message,false);
+        }
+
+        return $response;
     }
 
 
-    public function getApps(int $offset) : string
+    public function getApps(string $data) : string
     {
-        $result = $this->repository->getApps($offset);
-        $this->repository->closeDb();
-        return $result;
+        if ($data != null && strlen($data) > 0 && strpos($data,'@') != false)
+        {
+            $decrypted = json_decode($this->securityManager->decryptAes($data),true);
+
+            if ($decrypted != null && $decrypted['offset'] != null)
+            {
+                $result = $this->service->getApps($decrypted['offset']);
+                switch ($result) {
+                    case "-1":
+                        $mainResult = -1;
+                        $message = 'فرایند با خطا مواجه شد (خطای سیستمی)';
+                        break;
+
+                    default:
+                        $mainResult = 1;
+                        $message = $result;
+                        break;
+                }
+            }else
+            {
+                $mainResult = 0;
+                $message = 'پارامتر های ارسالی نا معتبر است';
+            }
+
+            $response = $this->calculateData($data,$mainResult,$message,true);
+
+        }else
+        {
+            $mainResult = 0;
+            $message = 'پارامتر های ارسالی نا معتبر است';
+            $response = $this->calculateData($data,$mainResult,$message,false);
+        }
+
+        return $response;
     }
 
 
-    public function getAppsByCategory(int $offset,string $category) : string
+    public function getAppsByCategory(string $data) : string
     {
-        $result = $this->repository->getAppsByCategory($offset,$category);
-        $this->repository->closeDb();
-        return $result;
+        if ($data != null && strlen($data) > 0 && strpos($data,'@') != false)
+        {
+            $decrypted = json_decode($this->securityManager->decryptAes($data),true);
+
+            if ($decrypted != null && $decrypted['offset'] != null && strlen($decrypted['category']) > 0)
+            {
+                $result = $this->service->getAppsByCategory($decrypted['offset'],$decrypted['category']);
+                switch ($result)
+                {
+                    case "-1":
+                        $mainResult = -1;
+                        $message = 'فرایند با خطا مواجه شد (خطای سیستمی)';
+                        break;
+
+                    default:
+                        $mainResult = 1;
+                        $message = $result;
+                        break;
+                }
+            }else
+            {
+                $mainResult = 0;
+                $message = 'پارامتر های ارسالی نا معتبر است';
+            }
+
+            $response = $this->calculateData($data,$mainResult,$message,true);
+
+        }else
+        {
+            $mainResult = 0;
+            $message = 'پارامتر های ارسالی نا معتبر است';
+            $response = $this->calculateData($data,$mainResult,$message,false);
+        }
+
+        return $response;
     }
 
 
-    public function getApp(string $packageName) : string
+    public function getApp(string $data) : string
     {
-        $result = $this->repository->getApp($packageName);
-        $this->repository->closeDb();
-        return $result;
+        if ($data != null && strlen($data) > 0 && strpos($data,'@') != false)
+        {
+            $decrypted = json_decode($this->securityManager->decryptAes($data),true);
+
+            if ($decrypted != null && strlen($decrypted['packageName']) > 0)
+            {
+                $result = $this->service->getApp($decrypted['packageName']);
+                switch ($result)
+                {
+                    case "-1":
+                        $mainResult = -1;
+                        $message = 'فرایند با خطا مواجه شد (خطای سیستمی)';
+                        break;
+
+                    default:
+                        $mainResult = 1;
+                        $message = $result;
+                        break;
+                }
+            }else
+            {
+                $mainResult = 0;
+                $message = 'پارامتر های ارسالی نا معتبر است';
+            }
+
+            $response = $this->calculateData($data,$mainResult,$message,true);
+
+        }else
+        {
+            $mainResult = 0;
+            $message = 'پارامتر های ارسالی نا معتبر است';
+            $response = $this->calculateData($data,$mainResult,$message,false);
+        }
+
+        return $response;
     }
 
 
-    public function getTitlesSearch(string $query) : string
+    public function getTitlesSearch(string $data) : string
     {
-        $result = $this->repository->getTitlesSearch($query);
-        $this->repository->closeDb();
-        return $result;
+        if ($data != null && strlen($data) > 0 && strpos($data,'@') != false)
+        {
+            $decrypted = json_decode($this->securityManager->decryptAes($data),true);
+
+            if ($decrypted != null && strlen($decrypted['query']) > 0)
+            {
+                $result = $this->service->getTitlesSearch($decrypted['query']);
+                switch ($result)
+                {
+                    case "-1":
+                        $mainResult = -1;
+                        $message = 'فرایند با خطا مواجه شد (خطای سیستمی)';
+                        break;
+
+                    default:
+                        $mainResult = 1;
+                        $message = $result;
+                        break;
+                }
+            }else
+            {
+                $mainResult = 0;
+                $message = 'پارامتر های ارسالی نا معتبر است';
+            }
+
+            $response = $this->calculateData($data,$mainResult,$message,true);
+
+        }else
+        {
+            $mainResult = 0;
+            $message = 'پارامتر های ارسالی نا معتبر است';
+            $response = $this->calculateData($data,$mainResult,$message,false);
+        }
+
+        return $response;
     }
 
 
-    public function getAppsSearch(string $query) : string
+    public function getAppsSearch(string $data) : string
     {
-        $result = $this->repository->getAppsSearch($query);
-        $this->repository->closeDb();
-        return $result;
+        if ($data != null && strlen($data) > 0 && strpos($data,'@') != false)
+        {
+            $decrypted = json_decode($this->securityManager->decryptAes($data),true);
+
+            if ($decrypted != null && strlen($decrypted['query']) > 0)
+            {
+                $result = $this->service->getTitlesSearch($decrypted['query']);
+                switch ($result)
+                {
+                    case "-1":
+                        $mainResult = -1;
+                        $message = 'فرایند با خطا مواجه شد (خطای سیستمی)';
+                        break;
+
+                    default:
+                        $mainResult = 1;
+                        $message = $result;
+                        break;
+                }
+            }else
+            {
+                $mainResult = 0;
+                $message = 'پارامتر های ارسالی نا معتبر است';
+            }
+
+            $response = $this->calculateData($data,$mainResult,$message,true);
+
+        }else
+        {
+            $mainResult = 0;
+            $message = 'پارامتر های ارسالی نا معتبر است';
+            $response = $this->calculateData($data,$mainResult,$message,false);
+        }
+
+        return $response;
     }
 
 
-    public function getUpdates(array $packageNames) : string
+    public function getUpdates(string $data) : string
     {
-        $result = $this->repository->getUpdates($packageNames);
-        $this->repository->closeDb();
-        return $result;
+        if ($data != null && strlen($data) > 0 && strpos($data,'@') != false)
+        {
+            $decrypted = json_decode($this->securityManager->decryptAes($data),true);
+
+            if ($decrypted != null)
+            {
+                if (count($decrypted) > 0)
+                {
+                    $result = $this->service->getUpdates($decrypted);
+                    switch ($result) {
+                        case "-1":
+                            $mainResult = -1;
+                            $message = 'فرایند با خطا مواجه شد (خطای سیستمی)';
+                            break;
+
+                        default:
+                            $mainResult = 1;
+                            $message = $result;
+                            break;
+                    }
+                }else
+                {
+                    $mainResult = 1;
+                    $message = 'هیچ بروزرسانی موجود نیست';
+                }
+            }else
+            {
+                $mainResult = 0;
+                $message = 'پارامتر های ارسالی نا معتبر است';
+            }
+
+            $response = $this->calculateData($data,$mainResult,$message,true);
+
+        }else
+        {
+            $mainResult = 0;
+            $message = 'پارامتر های ارسالی نا معتبر است';
+            $response = $this->calculateData($data,$mainResult,$message,false);
+        }
+
+        return $response;
     }
+
 }
