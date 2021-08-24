@@ -1,6 +1,6 @@
 <?php
 require_once (__DIR__.DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'autoload.php');
-use AppStore\view;
+use AppStore\view,AppStore\utils;
 error_reporting(E_ALL);
 
 $requestCode = $_POST['requestCode'];
@@ -80,6 +80,11 @@ if ($requestCode != null && strlen($requestCode) > 0 && $data != null && strlen(
         case 301:
             $view = new view\CommentView();
             $view->deleteComment($data);
+            break;
+
+        case 500:
+            $downloadManager = new utils\DownloadManager();
+            $downloadManager->download($data);
             break;
 
         default:
