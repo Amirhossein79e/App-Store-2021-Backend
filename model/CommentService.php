@@ -14,6 +14,24 @@ class CommentService
     }
 
 
+    public function getComments(string $access,string $packageName,int $offset)
+    {
+        //TODO
+        $result = $this->repository->getComments($access,$packageName,$offset);
+        $this->repository->closeDb();
+        return $result;
+    }
+
+
+    public function getRatings(string $packageName)
+    {
+        //TODO
+        $result = $this->repository->getRatings($packageName);
+        $this->repository->closeDb();
+        return $result;
+    }
+
+
     public function submitComment(string $access,string $detail,float $rate,string $packageName) : string
     {
         if ($detail == null)

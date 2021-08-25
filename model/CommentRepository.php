@@ -16,6 +16,81 @@ class CommentRepository extends Repository
     }
 
 
+    public function getComments(string $access,string $packageName,int $offset) : string
+    {
+        $stmt = new \mysqli_stmt($this->mySqli,'select * from comment where package_name = ? limit 25 offset '.$offset);
+        $stmt->bind_param('s',$packageName);
+        $success = $stmt->execute();
+        if ($success)
+        {
+            $result = $stmt->get_result();
+            $array = array();
+
+            if ($result->num_rows > 0)
+            {
+                while ($row = $result->fetch_assoc())
+                {
+                    if ($row['access'] == $access)
+                    {
+                        $row['isAccess'] = 1;
+                    }else
+                    {
+                        $row['isAccess'] = 0;
+                    }
+                    array_push($array,$row);
+                }
+            }
+
+            $mainResult = json_encode($array);
+
+        }else
+        {
+            $mainResult = -1;
+        }
+
+        $stmt->close();
+        return $mainResult;
+    }
+
+
+    public function getRatings(string $packageName) : string
+    {
+        $stmt = new \mysqli_stmt($this->mySqli,'select rate from comment where package_name = ?');
+        $stmt->bind_param('s',$packageName);
+        $success = $stmt->execute();
+        if ($success)
+        {
+            $result = $stmt->get_result();
+            $rate = 0.0;
+
+            if ($result->num_rows > 0)
+            {
+                $i = 0;
+
+                while ($row = $result->fetch_assoc())
+                {
+                    $rate = $row['rate'];
+                    settype($rate,'float');
+                    $rate += $rate;
+                    $i++;
+                }
+
+                $rating = $rate/$i;
+
+            }
+            settype($rating,'string');
+            $mainResult = $rating;
+
+        }else
+        {
+            $mainResult = -1;
+        }
+
+        $stmt->close();
+        return $mainResult;
+    }
+
+
     public function submitComment(string $access,string $detail,float $rate,string $packageName) : string
     {
         $selectStmt = new \mysqli_stmt($this->mySqli,'select access from comment where access = ? and package_name = ?');

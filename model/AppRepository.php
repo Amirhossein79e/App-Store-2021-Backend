@@ -16,6 +16,33 @@ class AppRepository extends Repository
     }
 
 
+    public function getHome() : string
+    {
+        //TODO
+        $stmt = new \mysqli_stmt($this->mysqli,'select * from category where package_name = ?');
+        $s = 'home';
+        $stmt->bind_param('s',$s);
+        $success = $stmt->execute();
+        if ($success)
+        {
+            $array = array();
+            $result = $stmt->get_result();
+            while ($row = $result->fetch_assoc())
+            {
+                array_push($array,$row);
+            }
+            $mainResult = json_encode($array);
+        }
+        else
+        {
+            $mainResult = -1;
+        }
+
+        $stmt->close();
+        return $mainResult;
+    }
+
+
     public function getCategories() : string
     {
         $stmt = new \mysqli_stmt($this->mysqli,'select * from category');
@@ -66,7 +93,14 @@ class AppRepository extends Repository
 
     public function getAppsByCategory(int $offset,string $category) : string
     {
-        $stmt = new \mysqli_stmt($this->mysqli,'select package_name,name_fa,name_en,dev_fa,dev_en from app where category = ? limit 25 offset '.$offset);
+        if ($category == 'all')
+        {
+            $stmt = new \mysqli_stmt($this->mysqli,'select package_name,name_fa,name_en,dev_fa,dev_en from app limit 10 offset '.$offset);
+        }else
+        {
+            $stmt = new \mysqli_stmt($this->mysqli,'select package_name,name_fa,name_en,dev_fa,dev_en from app where category = ? limit 10 offset '.$offset);
+        }
+
         $stmt->bind_param('s',$category);
         $success = $stmt->execute();
         if ($success)

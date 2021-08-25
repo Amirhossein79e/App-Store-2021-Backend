@@ -22,7 +22,7 @@ class DownloadManager
             if ($decrypted != null && strlen($decrypted['packageName']) > 0)
             {
 
-                $path = __DIR__.DIRECTORY_SEPARATOR.$decrypted['packageName'];
+                $path = __DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'apk'.DIRECTORY_SEPARATOR.$decrypted['packageName'].'.apk';
 
                 if (file_exists($path))
                 {
