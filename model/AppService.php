@@ -14,6 +14,14 @@ class AppService
     }
 
 
+    public function getHome() : string
+    {
+        $result = $this->repository->getHome();
+        $this->repository->closeDb();
+        return $result;
+    }
+
+
     public function getCategories() : string
     {
         $result = $this->repository->getCategories();

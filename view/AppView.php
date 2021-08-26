@@ -15,6 +15,26 @@ class AppView
     }
 
 
+    public function getHome(string $data)
+    {
+        try
+        {
+            $result = $this->controller->getHome($data);
+            $b64 = base64_encode($result);
+            if (strlen($b64) > 3)
+            {
+                echo $b64;
+            }else
+            {
+                $this->onError();
+            }
+        }catch (\Exception $exception)
+        {
+            $this->onError();
+        }
+    }
+
+
     public function getCategories(string $data)
     {
         try

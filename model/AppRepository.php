@@ -18,20 +18,25 @@ class AppRepository extends Repository
 
     public function getHome() : string
     {
-        //TODO
-        $stmt = new \mysqli_stmt($this->mysqli,'select * from category where package_name = ?');
-        $s = 'home';
-        $stmt->bind_param('s',$s);
+        $stmt = new \mysqli_stmt($this->mysqli,'select * from home');
         $success = $stmt->execute();
         if ($success)
         {
-            $array = array();
             $result = $stmt->get_result();
+            $slider = array();
+            $r = array();
             while ($row = $result->fetch_assoc())
             {
-                array_push($array,$row);
+                if ($row['type'] == 'row')
+                {
+                    array_push($r,array('category'=>$row['category'],'categoryName'=>$row['category_name']));
+
+                }else if ($row['type'] == 'slider')
+                {
+                    array_push($slider,$row['package_name']);
+                }
             }
-            $mainResult = json_encode($array);
+            $mainResult = json_encode(array('row'=>$r,'slider'=>$slider));
         }
         else
         {

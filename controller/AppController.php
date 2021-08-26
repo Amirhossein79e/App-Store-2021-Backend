@@ -31,6 +31,37 @@ class AppController
     }
 
 
+    public function getHome(string $data) : string
+    {
+        if ($data != null && strlen($data) > 0 && strpos($data,'@') != false)
+        {
+            $result = $this->service->getHome();
+            switch ($result)
+            {
+                case "-1":
+                    $mainResult = -1;
+                    $message = 'فرایند با خطا مواجه شد (خطای سیستمی)';
+                    break;
+
+                default:
+                    $mainResult = 1;
+                    $message = $result;
+                    break;
+            }
+
+            $response = $this->calculateData($data,$mainResult,$message,true);
+
+        }else
+        {
+            $mainResult = 0;
+            $message = 'پارامتر های ارسالی نا معتبر است';
+            $response = $this->calculateData($data,$mainResult,$message,false);
+        }
+
+        return $response;
+    }
+
+
     public function getCategories(string $data) : string
     {
         if ($data != null && strlen($data) > 0 && strpos($data,'@') != false)

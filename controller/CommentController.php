@@ -31,13 +31,95 @@ class CommentController
     }
 
 
+    public function getComments(string $data) : string
+    {
+        if ($data != null && strlen($data) > 0 && strpos($data,'@') != false)
+        {
+            $decrypted = json_decode($this->securityManager->decryptAes($data),true);
+
+            if ($decrypted != null && strlen($decrypted['access']) > 80 && strlen($decrypted['access']) < 96 && strlen($decrypted['packageName']) > 0 && strlen($decrypted['offset']) > 0)
+            {
+                $offset = $decrypted['offset'];
+                settype($offset,'int');
+                $result = $this->service->getComments($decrypted['access'],$decrypted['packageName'],$offset);
+                switch ($result)
+                {
+                    case "-1":
+                        $mainResult = -1;
+                        $message = 'فرایند با خطا مواجه شد (خطای سیستمی)';
+                        break;
+
+                    default:
+                        $mainResult = 1;
+                        $message = $result;
+                        break;
+                }
+            }else
+            {
+                $mainResult = 0;
+                $message = 'پارامتر های ارسالی نا معتبر است';
+            }
+
+            $response = $this->calculateData($data,$mainResult,$message,true);
+
+        }else
+        {
+            $mainResult = 0;
+            $message = 'پارامتر های ارسالی نا معتبر است';
+            $response = $this->calculateData($data,$mainResult,$message,false);
+        }
+
+        return $response;
+    }
+
+
+    public function getRating(string $data) : string
+    {
+        if ($data != null && strlen($data) > 0 && strpos($data,'@') != false)
+        {
+            $decrypted = json_decode($this->securityManager->decryptAes($data),true);
+
+            if ($decrypted != null && strlen($decrypted['packageName']) > 0)
+            {
+                $result = $this->service->getRatings($decrypted['packageName']);
+                switch ($result)
+                {
+                    case "-1":
+                        $mainResult = -1;
+                        $message = 'فرایند با خطا مواجه شد (خطای سیستمی)';
+                        break;
+
+                    default:
+                        $mainResult = 1;
+                        $message = $result;
+                        break;
+                }
+            }else
+            {
+                $mainResult = 0;
+                $message = 'پارامتر های ارسالی نا معتبر است';
+            }
+
+            $response = $this->calculateData($data,$mainResult,$message,true);
+
+        }else
+        {
+            $mainResult = 0;
+            $message = 'پارامتر های ارسالی نا معتبر است';
+            $response = $this->calculateData($data,$mainResult,$message,false);
+        }
+
+        return $response;
+    }
+
+
     public function submitComment(string $data) : string
     {
         if ($data != null && strlen($data) > 0 && strpos($data,'@') != false)
         {
         $decrypted = json_decode($this->securityManager->decryptAes($data),true);
 
-        if ($decrypted != null && strlen($decrypted['access']) > 80 && strlen($decrypted['access']) < 96 && $decrypted['rate'] > 0 && strlen($decrypted['packageName'] > 0))
+        if ($decrypted != null && strlen($decrypted['access']) > 80 && strlen($decrypted['access']) < 96 && $decrypted['rate'] > 0 && strlen($decrypted['packageName']) > 0)
         {
             $result = $this->service->submitComment($decrypted['access'],$decrypted['detail'],$decrypted['rate'],$decrypted['packageName']);
             switch ($result)
@@ -82,7 +164,7 @@ class CommentController
         {
         $decrypted = json_decode($this->securityManager->decryptAes($data),true);
 
-        if ($decrypted != null && strlen($decrypted['access']) > 80 && strlen($decrypted['access']) < 96 && strlen($decrypted['packageName'] > 0))
+        if ($decrypted != null && strlen($decrypted['access']) > 80 && strlen($decrypted['access']) < 96 && strlen($decrypted['packageName']) > 0)
         {
             $result = $this->service->deleteComment($decrypted['access'],$decrypted['packageName']);
             if ($result)

@@ -21,6 +21,46 @@ class CommentView
     }
 
 
+    public function getComments(string $data)
+    {
+        try
+        {
+            $result = $this->controller->getComments($data);
+            $b64 = base64_encode($result);
+            if (strlen($b64) > 3)
+            {
+                echo $b64;
+            }else
+            {
+                $this->onError();
+            }
+        }catch (\Exception $exception)
+        {
+            $this->onError();
+        }
+    }
+
+
+    public function getRating(string $data)
+    {
+        try
+        {
+            $result = $this->controller->getRating($data);
+            $b64 = base64_encode($result);
+            if (strlen($b64) > 3)
+            {
+                echo $b64;
+            }else
+            {
+                $this->onError();
+            }
+        }catch (\Exception $exception)
+        {
+            $this->onError();
+        }
+    }
+
+
     public function submitComment(string $data)
     {
         try
