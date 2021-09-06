@@ -79,7 +79,7 @@ class SecurityManager
     private function decryptRsa(string $data)
     {
         $decryptedData = null;
-        openssl_private_decrypt($data,$decryptedData,$this->getPrivateKey());
+        openssl_private_decrypt($data,$decryptedData,$this->getPrivateKey(),OPENSSL_PKCS1_PADDING);
         return $decryptedData;
     }
 

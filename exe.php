@@ -104,7 +104,7 @@ if ($requestCode != null && strlen($requestCode) > 0 && $data != null && strlen(
 
         default:
             $array = array('responseCode'=>-1,'data'=>'Incorrect requestCode');
-            echo json_encode($array);
+            echo base64_encode(json_encode($array),JSON_UNESCAPED_UNICODE);
     }
 }
 

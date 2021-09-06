@@ -36,7 +36,7 @@ class AppRepository extends Repository
                     array_push($slider,$row['package_name']);
                 }
             }
-            $mainResult = json_encode(array('row'=>$r,'slider'=>$slider));
+            $mainResult = json_encode(array('row'=>$r,'slider'=>$slider),JSON_UNESCAPED_UNICODE);
         }
         else
         {

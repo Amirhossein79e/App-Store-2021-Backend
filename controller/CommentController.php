@@ -20,6 +20,12 @@ class CommentController
     private function calculateData(string $keyData, string $responseCode, string $data,bool $valid)
     {
         $array = array('responseCode' => $responseCode, 'data' => $data);
+
+        if (json_decode($data,true) != null)
+        {
+            $array['data'] = json_decode($data,true);
+        }
+
         if ($valid)
         {
             return $this->securityManager->encryptAes($keyData, json_encode($array, JSON_UNESCAPED_UNICODE));
