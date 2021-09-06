@@ -24,7 +24,7 @@ class Controller
         if (json_decode($data,true) == null)
         {
             $array['message'] = $data;
-            $array['data'] = $data;
+            $array['data'] = null;
         }else
         {
             $array['message'] = null;

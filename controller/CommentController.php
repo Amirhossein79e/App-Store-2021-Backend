@@ -19,12 +19,12 @@ class CommentController
 
     private function calculateData(string $keyData, string $responseCode, string $data,bool $valid)
     {
-        $array = array('responseCode' => $responseCode, 'data' => $data);
+        $array = array('responseCode' => $responseCode);
 
         if (json_decode($data,true) == null)
         {
             $array['message'] = $data;
-            $array['data'] = $data;
+            $array['data'] = null;
         }else
         {
             $array['message'] = null;
