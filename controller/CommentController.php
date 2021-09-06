@@ -48,7 +48,7 @@ class CommentController
         {
             $decrypted = json_decode($this->securityManager->decryptAes($data),true);
 
-            if ($decrypted != null && strlen($decrypted['access']) > 80 && strlen($decrypted['access']) < 96 && strlen($decrypted['packageName']) > 0 && strlen($decrypted['offset']) > 0)
+            if ($decrypted != null && strlen($decrypted['access']) > 80 && strlen($decrypted['access']) < 96 && strlen($decrypted['packageName']) > 0 && $decrypted['offset'] !== null )
             {
                 $offset = $decrypted['offset'];
                 settype($offset,'int');

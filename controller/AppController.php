@@ -110,7 +110,7 @@ class AppController
         {
             $decrypted = json_decode($this->securityManager->decryptAes($data),true);
 
-            if ($decrypted != null && $decrypted['offset'] != null)
+            if ($decrypted != null && $decrypted['offset'] !== null)
             {
                 $result = $this->service->getApps($decrypted['offset']);
                 switch ($result) {
@@ -149,7 +149,7 @@ class AppController
         {
             $decrypted = json_decode($this->securityManager->decryptAes($data),true);
 
-            if ($decrypted != null && $decrypted['offset'] != null && strlen($decrypted['category']) > 0)
+            if ($decrypted != null && $decrypted['offset'] !== null && strlen($decrypted['category']) > 0)
             {
                 $result = $this->service->getAppsByCategory($decrypted['offset'],$decrypted['category']);
                 switch ($result)
