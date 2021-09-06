@@ -41,7 +41,7 @@ class CommentRepository extends Repository
                 }
             }
 
-            $mainResult = json_encode($array);
+            $mainResult = json_encode($array,JSON_UNESCAPED_UNICODE);
 
         }else
         {

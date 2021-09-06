@@ -106,7 +106,7 @@ class Repository
                 if ($success)
                 {
                     $array = array('username' => $username, 'access' => $access);
-                    $mainResult = json_encode($array);
+                    $mainResult = json_encode($array,JSON_UNESCAPED_UNICODE);
                 }
             }
         }else
@@ -133,7 +133,7 @@ class Repository
             {
                 $row = $result->fetch_assoc();
                 $array = array('username' => $row['username'], 'access' => $row['access']);
-                $mainResult = json_encode($array);
+                $mainResult = json_encode($array,JSON_UNESCAPED_UNICODE);
             }else
             {
                 $mainResult = 0;

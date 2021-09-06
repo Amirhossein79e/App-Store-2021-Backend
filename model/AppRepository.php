@@ -60,7 +60,7 @@ class AppRepository extends Repository
             {
                 array_push($array,$row);
             }
-            $mainResult = json_encode($array);
+            $mainResult = json_encode($array,JSON_UNESCAPED_UNICODE);
         }
         else
         {
@@ -84,7 +84,7 @@ class AppRepository extends Repository
             {
                 array_push($array,$row);
             }
-            $mainResult = json_encode($array);
+            $mainResult = json_encode($array,JSON_UNESCAPED_UNICODE);
         }
         else
         {
@@ -116,7 +116,7 @@ class AppRepository extends Repository
             {
                 array_push($array,$row);
             }
-            $mainResult = json_encode($array);
+            $mainResult = json_encode($array,JSON_UNESCAPED_UNICODE);
         }
         else
         {
@@ -139,7 +139,7 @@ class AppRepository extends Repository
             if ($result->num_rows>0)
             {
                 $row = $result->fetch_assoc();
-                $mainResult = json_encode($row);
+                $mainResult = json_encode($row,JSON_UNESCAPED_UNICODE);
             }else
             {
                 $mainResult = array();
@@ -168,7 +168,7 @@ class AppRepository extends Repository
             {
                 array_push($array,$row);
             }
-            $mainResult = json_encode($array);
+            $mainResult = json_encode($array,JSON_UNESCAPED_UNICODE);
         }
         else
         {
@@ -193,7 +193,7 @@ class AppRepository extends Repository
             {
                 array_push($array,$row);
             }
-            $mainResult = json_encode($array);
+            $mainResult = json_encode($array,JSON_UNESCAPED_UNICODE);
         }
         else
         {
@@ -238,7 +238,7 @@ class AppRepository extends Repository
                     }
                 }
             }
-            $mainResult = json_encode($array);
+            $mainResult = json_encode($array,JSON_UNESCAPED_UNICODE);
         }
         else
         {
