@@ -21,8 +21,13 @@ class AppController
     {
         $array = array('responseCode' => $responseCode, 'data' => $data);
 
-        if (json_decode($data,true) != null)
+        if (json_decode($data,true) == null)
         {
+            $array['message'] = $data;
+            $array['data'] = $data;
+        }else
+        {
+            $array['message'] = null;
             $array['data'] = json_decode($data,true);
         }
 

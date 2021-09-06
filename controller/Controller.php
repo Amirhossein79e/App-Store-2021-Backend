@@ -19,10 +19,15 @@ class Controller
 
     private function calculateData(string $keyData, string $responseCode, string $data,bool $valid)
     {
-        $array = array('responseCode' => $responseCode, 'data' => $data);
+        $array = array('responseCode' => $responseCode);
 
-        if (json_decode($data,true) != null)
+        if (json_decode($data,true) == null)
         {
+            $array['message'] = $data;
+            $array['data'] = $data;
+        }else
+        {
+            $array['message'] = null;
             $array['data'] = json_decode($data,true);
         }
 
