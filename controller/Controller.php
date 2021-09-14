@@ -85,7 +85,7 @@ class Controller
         {
             $decrypted = json_decode($this->securityManager->decryptAes($data), true);
 
-            if ($decrypted != null && strlen($decrypted['uid']) == 8 && strlen($decrypted['token']) > 100 && strlen($decrypted['token']) < 450)
+            if ($decrypted != null && strlen($decrypted['uid']) == 23 && strlen($decrypted['token']) > 100 && strlen($decrypted['token']) < 450)
             {
                 $result = $this->service->syncToken($decrypted['uid'], $decrypted['token']);
                 if ($result)
