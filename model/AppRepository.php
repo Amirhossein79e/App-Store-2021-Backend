@@ -9,6 +9,7 @@ class AppRepository extends Repository
 {
     private $mysqli;
 
+
     public function __construct()
     {
         parent::__construct();
@@ -157,7 +158,14 @@ class AppRepository extends Repository
 
     public function getTitlesSearch(string $query) : string
     {
-        $stmt = new \mysqli_stmt($this->mysqli,'select name_fa,name_en from app where name_fa like %?% or name_en like %?% or tag like %?%');
+        if (preg_match("/[^\x{0600}-\x{06FF}\s]+$/u",$query) > 0)
+        {
+            $stmt = new \mysqli_stmt($this->mysqli,'select name_fa from app where name_fa like %?% or name_en like %?% or tag like %?%');
+        }else
+        {
+            $stmt = new \mysqli_stmt($this->mysqli,'select name_en from app where name_fa like %?% or name_en like %?% or tag like %?%');
+        }
+
         $stmt->bind_param('sss',$query,$query,$query);
         $success = $stmt->execute();
         if ($success)

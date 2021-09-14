@@ -18,37 +18,76 @@ class CommentRepository extends Repository
 
     public function getComments(string $access,string $packageName,int $offset) : string
     {
-        $stmt = new \mysqli_stmt($this->mySqli,'select * from comment where package_name = ? limit 25 offset '.$offset);
-        $stmt->bind_param('s',$packageName);
-        $success = $stmt->execute();
+        $myStmt = new \mysqli_stmt($this->mySqli, 'select * from comment where package_name = ? and access = ? limit 1');
+        $myStmt->bind_param('ss', $packageName, $access);
+        $mySuccess = $myStmt->execute();
+
+        if ($mySuccess)
+        {
+            $array = array();
+
+            $myResult = $myStmt->get_result();
+
+            if ($myResult->num_rows > 0)
+            {
+                while ($row = $myResult->fetch_assoc())
+                {
+                    if ($row['access'] == $access)
+                    {
+                        $row['isAccess'] = 1;
+                    } else {
+                        $row['isAccess'] = 0;
+                    }
+
+                    unset($row['access']);
+
+                    array_push($array, $row);
+                }
+            }
+
+            $stmt = new \mysqli_stmt($this->mySqli, 'select * from comment where package_name = ? & access != ? limit 25 offset ' . $offset);
+            $stmt->bind_param('ss', $packageName,$access);
+            $success = $stmt->execute();
+
         if ($success)
         {
             $result = $stmt->get_result();
-            $array = array();
 
             if ($result->num_rows > 0)
             {
                 while ($row = $result->fetch_assoc())
                 {
-                    if ($row['access'] == $access)
+                    if (trim($row['detail']) > 0)
                     {
-                        $row['isAccess'] = 1;
-                    }else
-                    {
-                        $row['isAccess'] = 0;
+                        if ($row['access'] == $access)
+                        {
+                            $row['isAccess'] = 1;
+                        } else {
+                            $row['isAccess'] = 0;
+                        }
+
+                        unset($row['access']);
+
+                        array_push($array, $row);
                     }
-                    array_push($array,$row);
                 }
             }
 
-            $mainResult = json_encode($array,JSON_UNESCAPED_UNICODE);
+            $mainResult = json_encode($array, JSON_UNESCAPED_UNICODE);
 
-        }else
-        {
+        } else
+            {
             $mainResult = -1;
-        }
+            }
 
         $stmt->close();
+
+        }else
+            {
+                $mainResult = -1;
+            }
+
+        $myStmt->close();
         return $mainResult;
     }
 
