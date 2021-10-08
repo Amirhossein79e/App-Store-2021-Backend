@@ -190,6 +190,27 @@ class Repository
     }
 
 
+    public function validateUser(string $access) : string
+    {
+        $stmt = new \mysqli_stmt($this->mySqli,"select is_valid from user where access = ? limit 1");
+        $stmt->bind_param("s",$access);
+        $success = $stmt->execute();
+
+        if ($success)
+        {
+            $result = $stmt->get_result();
+            $row = $result->fetch_assoc();
+            $mainResult = $row['is_valid'];
+        }else
+        {
+            $mainResult = -1;
+        }
+
+        $stmt->close();
+        return $mainResult;
+    }
+
+
     public function closeDb()
     {
         $this->mySqli->close();

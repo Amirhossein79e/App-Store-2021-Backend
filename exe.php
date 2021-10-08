@@ -37,6 +37,13 @@ if ($requestCode != null && strlen($requestCode) > 0 && $data != null && strlen(
             $view->syncUser($data);
             break;
 
+
+        case 105:
+            $view = new view\View();
+            $view->validateUser($data);
+            break;
+
+
         case 200:
             $view = new view\AppView();
             $view->getHome($data);

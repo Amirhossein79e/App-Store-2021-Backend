@@ -215,7 +215,7 @@ class Controller
 
         if ($decrypted != null && strlen($decrypted['access']) > 80 && strlen($decrypted['access']) < 96 && strlen($decrypted['token']) > 100 && strlen($decrypted['token']) < 450)
         {
-           $result = $this->service->syncUser($decrypted['access'],$decrypted);
+           $result = $this->service->syncUser($decrypted['access'],$decrypted['token']);
             switch ($result)
             {
                 case '-1':
@@ -238,6 +238,51 @@ class Controller
             $mainResult = 0;
             $message = "پارامتر های ارسالی نا معتبر است";
         }
+
+            $response = $this->calculateData($data,$mainResult,$message,true);
+
+        }else
+        {
+            $mainResult = 0;
+            $message = "پارامتر های ارسالی نا معتبر است";
+            $response = $this->calculateData($data,$mainResult,$message,false);
+        }
+
+        return $response;
+    }
+
+
+    public function validateUser(string $data) : string
+    {
+        if ($data != null && strlen($data) > 0 && strpos($data,'@') != false)
+        {
+            $decrypted = json_decode($this->securityManager->decryptAes($data),true);
+
+            if ($decrypted != null && strlen($decrypted['access']) > 80)
+            {
+                $result = $this->service->validateUser($decrypted['access']);
+                switch ($result)
+                {
+                    case '-1':
+                        $mainResult = -1;
+                        $message = 'فرایند با خطا مواجه شد (خطای سیستمی)';
+                        break;
+
+                    case '0':
+                        $mainResult = 0;
+                        $message = "مجددا وارد حساب کاربری خود شوید";
+                        break;
+
+                    case '1':
+                        $mainResult = 1;
+                        $message = 'فرایند با موفقیت اجرا شد';
+                        break;
+                }
+            }else
+            {
+                $mainResult = 0;
+                $message = "پارامتر های ارسالی نا معتبر است";
+            }
 
             $response = $this->calculateData($data,$mainResult,$message,true);
 

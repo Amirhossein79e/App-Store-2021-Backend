@@ -121,4 +121,24 @@ class View
         }
     }
 
+
+    public function validateUser(string $data)
+    {
+        try
+        {
+            $result = $this->controller->validateUser($data);
+            $b64 = base64_encode($result);
+            if (strlen($b64) > 3)
+            {
+                echo $b64;
+            }else
+            {
+                $this->onError();
+            }
+        }catch (\Exception $exception)
+        {
+            $this->onError();
+        }
+    }
+
 }

@@ -54,4 +54,12 @@ class Service
         return $result;
     }
 
+
+    public function validateUser(string $access) : string
+    {
+        $result = $this->repository->validateUser($access);
+        $this->repository->closeDb();
+        return $result;
+    }
+
 }
