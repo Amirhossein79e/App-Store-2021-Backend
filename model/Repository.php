@@ -16,6 +16,8 @@ class Repository
         {
             mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
             $this->mySqli = new \mysqli('localhost','*','*','*');
+            $this->mySqli->set_charset('utf8mb4');
+
             if ($this->mySqli->connect_error)
             {
                 die('Connection failed between server and database');
