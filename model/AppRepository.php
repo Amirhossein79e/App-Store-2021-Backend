@@ -75,7 +75,7 @@ class AppRepository extends Repository
 
     public function getApps(int $offset) : string
     {
-        $stmt = new \mysqli_stmt($this->mysqli,'select package_name,name_fa,name_en,dev_fa,dev_en from app limit 25 offset '.$offset);
+        $stmt = new \mysqli_stmt($this->mysqli,'select package_name,name_fa,name_en,dev_fa,dev_en from app limit 10 offset '.$offset);
         $success = $stmt->execute();
         if ($success)
         {
@@ -188,9 +188,9 @@ class AppRepository extends Repository
     }
 
 
-    public function getAppsSearch(string $query) : string
+    public function getAppsSearch(int $offset, string $query) : string
     {
-        $stmt = new \mysqli_stmt($this->mysqli,'select package_name,name_fa,name_en,dev_fa,dev_en from app where name_fa like %?% or name_en like %?% or tag like %?%');
+        $stmt = new \mysqli_stmt($this->mysqli,'select package_name,name_fa,name_en,dev_fa,dev_en from app where name_fa like %?% or name_en like %?% or tag like %?% limit 10 offset '.$offset);
         $stmt->bind_param('sss',$query,$query,$query);
         $success = $stmt->execute();
         if ($success)
@@ -213,7 +213,7 @@ class AppRepository extends Repository
     }
 
 
-    public function getUpdates(array $packageNames) : string
+    public function getUpdates(int $offset, array $packageNames) : string
     {
         $packages = '';
         for ($i = 0;$i < count($packageNames);$i++)
@@ -227,7 +227,7 @@ class AppRepository extends Repository
             }
         }
 
-        $stmt = new \mysqli_stmt($this->mysqli,'select package_name,name_fa,name_en,ver_code,ver_name from app where package_name in (?)');
+        $stmt = new \mysqli_stmt($this->mysqli,'select package_name,name_fa,name_en,ver_code,ver_name from app where package_name in (?) limit 10 offset '.$offset);
         $stmt->bind_param('s',$packages);
         $success = $stmt->execute();
         if ($success)

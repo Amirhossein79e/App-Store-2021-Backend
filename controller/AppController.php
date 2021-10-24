@@ -269,9 +269,9 @@ class AppController
         {
             $decrypted = json_decode($this->securityManager->decryptAes($data),true);
 
-            if ($decrypted != null && strlen($decrypted['query']) > 0)
+            if ($decrypted != null && strlen($decrypted['query']) > 0 && $decrypted['offset'] !== null)
             {
-                $result = $this->service->getTitlesSearch($decrypted['query']);
+                $result = $this->service->getTitlesSearch($decrypted['offset'].$decrypted['query']);
                 switch ($result)
                 {
                     case "-1":
@@ -309,11 +309,11 @@ class AppController
         {
             $decrypted = json_decode($this->securityManager->decryptAes($data),true);
 
-            if ($decrypted != null)
+            if ($decrypted != null && $decrypted['offset'] !== null)
             {
                 if (count($decrypted) > 0)
                 {
-                    $result = $this->service->getUpdates($decrypted);
+                    $result = $this->service->getUpdates($decrypted['offset'],$decrypted['packages']);
                     switch ($result) {
                         case "-1":
                             $mainResult = -1;

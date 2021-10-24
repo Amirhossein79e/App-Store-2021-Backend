@@ -62,17 +62,17 @@ class AppService
     }
 
 
-    public function getAppsSearch(string $query) : string
+    public function getAppsSearch(int $offset, string $query) : string
     {
-        $result = $this->repository->getAppsSearch($query);
+        $result = $this->repository->getAppsSearch($offset,$query);
         $this->repository->closeDb();
         return $result;
     }
 
 
-    public function getUpdates(array $packageNames) : string
+    public function getUpdates(int $offset, array $packageNames) : string
     {
-        $result = $this->repository->getUpdates($packageNames);
+        $result = $this->repository->getUpdates($offset,$packageNames);
         $this->repository->closeDb();
         return $result;
     }
