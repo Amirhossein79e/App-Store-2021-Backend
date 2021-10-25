@@ -172,9 +172,9 @@ class AppRepository extends Repository
         {
             $array = array();
             $result = $stmt->get_result();
-            while ($row = $result->fetch_assoc())
+            while ($row = $result->fetch_row())
             {
-                array_push($array,$row);
+                array_push($array,$row[0]);
             }
             $mainResult = json_encode($array,JSON_UNESCAPED_UNICODE);
         }
