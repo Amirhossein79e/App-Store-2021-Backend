@@ -141,6 +141,14 @@ class AppRepository extends Repository
             {
                 $row = $result->fetch_assoc();
                 $mainResult = json_encode($row,JSON_UNESCAPED_UNICODE);
+                $rateStr = $this->getRatings($packageName);
+                if ($rateStr == '-1')
+                {
+                    $mainResult = -1;
+                }else
+                {
+                    $row['rate'] = $rateStr;
+                }
             }else
             {
                 $mainResult = array();
@@ -249,6 +257,44 @@ class AppRepository extends Repository
             $mainResult = json_encode($array,JSON_UNESCAPED_UNICODE);
         }
         else
+        {
+            $mainResult = -1;
+        }
+
+        $stmt->close();
+        return $mainResult;
+    }
+
+
+    private function getRatings(string $packageName) : string
+    {
+        $stmt = new \mysqli_stmt($this->mysqli,'select rate from comment where package_name = ?');
+        $stmt->bind_param('s',$packageName);
+        $success = $stmt->execute();
+        if ($success)
+        {
+            $result = $stmt->get_result();
+            $rate = 0.0;
+
+            if ($result->num_rows > 0)
+            {
+                $i = 0;
+
+                while ($row = $result->fetch_assoc())
+                {
+                    $rate = $row['rate'];
+                    settype($rate,'float');
+                    $rate += $rate;
+                    $i++;
+                }
+
+                $rating = $rate/$i;
+
+            }
+            settype($rating,'string');
+            $mainResult = $rating;
+
+        }else
         {
             $mainResult = -1;
         }
