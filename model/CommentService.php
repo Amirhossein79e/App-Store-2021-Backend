@@ -16,6 +16,10 @@ class CommentService
 
     public function getComments(string $access,string $packageName,int $offset)
     {
+        if ($access == null)
+        {
+            $access = "";
+        }
         $result = $this->repository->getComments($access,$packageName,$offset);
         $this->repository->closeDb();
         return $result;
