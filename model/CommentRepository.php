@@ -48,7 +48,7 @@ class CommentRepository extends Repository
                 }
             }
 
-            $stmt = new \mysqli_stmt($this->mySqli, 'select * from comment where package_name = ? & access != ? limit 25 offset ' . $offset);
+            $stmt = new \mysqli_stmt($this->mySqli, 'select * from comment where package_name = ? and access != ? limit 25 offset ' . $offset);
             $stmt->bind_param('ss', $packageName,$access);
             $success = $stmt->execute();
 
