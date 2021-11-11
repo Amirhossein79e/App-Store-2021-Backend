@@ -32,16 +32,19 @@ class CommentRepository extends Repository
             {
                 while ($row = $myResult->fetch_assoc())
                 {
-                    if ($row['access'] == $access)
+                    if (strlen(trim($row['detail'])) > 0)
                     {
-                        $row['isAccess'] = 1;
-                    } else {
-                        $row['isAccess'] = 0;
+                        if ($row['access'] == $access)
+                        {
+                            $row['isAccess'] = 1;
+                        } else
+                        {
+                            $row['isAccess'] = 0;
+                        }
+
+                        unset($row['access']);
+                        array_push($array, $row);
                     }
-
-                    unset($row['access']);
-
-                    array_push($array, $row);
                 }
             }
 
@@ -57,7 +60,7 @@ class CommentRepository extends Repository
             {
                 while ($row = $result->fetch_assoc())
                 {
-                    if (trim($row['detail']) > 0)
+                    if (Ctrim($row['detail']) > 0)
                     {
                         if ($row['access'] == $access)
                         {
