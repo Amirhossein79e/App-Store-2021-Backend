@@ -99,7 +99,7 @@ class Repository
                 $mainResult = 0;
             }else
             {
-                $insertStmt = new \mysqli_stmt($this->mySqli,'insert into user values(?,?,?,?,?)');
+                $insertStmt = new \mysqli_stmt($this->mySqli,'insert into user(mail,password,username,token,access) values(?,?,?,?,?)');
                 $hashPassword = $this->securityManager->encryptHash($this->securityManager->encryptHash($password));
                 $access = $this->securityManager->getRandomToken();
                 $insertStmt->bind_param('sssss',$mail,$hashPassword,$username,$token,$access);
@@ -123,7 +123,7 @@ class Repository
 
     public function signInUser(string $mail,string $password) : string
     {
-        $stmt = new \mysqli_stmt($this->mySqli,'select username,access from user where mail = ? and password = ? limit 1');
+        $stmt = new \mysqli_stmt($this->mySqli,'select username,access,token from user where mail = ? and password = ? limit 1');
         $hashPassword = $this->securityManager->encryptHash($this->securityManager->encryptHash($password));
         $stmt->bind_param('ss',$mail,$hashPassword);
         $success = $stmt->execute();
@@ -134,8 +134,7 @@ class Repository
             if ($result->num_rows>0)
             {
                 $row = $result->fetch_assoc();
-                $array = array('username' => $row['username'], 'access' => $row['access']);
-                $mainResult = json_encode($array,JSON_UNESCAPED_UNICODE);
+                $mainResult = json_encode($row,JSON_UNESCAPED_UNICODE);
             }else
             {
                 $mainResult = 0;

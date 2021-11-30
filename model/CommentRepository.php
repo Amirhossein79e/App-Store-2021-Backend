@@ -32,18 +32,18 @@ class CommentRepository extends Repository
             {
                 while ($row = $myResult->fetch_assoc())
                 {
-                    if (strlen(trim($row['detail'])) > 0)
+                if (strlen(trim($row['detail'])) > 0)
                     {
-                        if ($row['access'] == $access)
-                        {
-                            $row['isAccess'] = 1;
-                        } else
-                        {
-                            $row['isAccess'] = 0;
-                        }
+                       if ($row['access'] == $access)
+                       {
+                           $row['isAccess'] = 1;
+                       } else
+                       {
+                           $row['isAccess'] = 0;
+                       }
 
-                        unset($row['access']);
-                        array_push($array, $row);
+                       unset($row['access']);
+                       array_push($array, $row);
                     }
                 }
             }
@@ -55,12 +55,11 @@ class CommentRepository extends Repository
         if ($success)
         {
             $result = $stmt->get_result();
-
             if ($result->num_rows > 0)
             {
                 while ($row = $result->fetch_assoc())
                 {
-                    if (Ctrim($row['detail']) > 0)
+                    if (strlen(trim($row['detail'])) > 0)
                     {
                         if ($row['access'] == $access)
                         {
@@ -107,19 +106,21 @@ class CommentRepository extends Repository
 
             if ($result->num_rows > 0)
             {
-                $i = 0;
 
                 while ($row = $result->fetch_assoc())
                 {
-                    $rate = $row['rate'];
+                    $rateRow = $row['rate'];
                     settype($rate,'float');
-                    $rate += $rate;
-                    $i++;
+                    $rate += $rateRow;
                 }
 
-                $rating = $rate/$i;
+                $rating = $rate/$result->num_rows;
 
+            }else
+            {
+               $rating = 0.0;
             }
+
             settype($rating,'string');
             $mainResult = $rating;
 
@@ -206,7 +207,7 @@ class CommentRepository extends Repository
 
     private function updateComment(string $access,string $detail,float $rate,string $packageName) : bool
     {
-        $stmt = new \mysqli_stmt($this->mySqli,'update comment set detail = ? and rate = ? where access = ? and package_name = ?');
+        $stmt = new \mysqli_stmt($this->mySqli,'update comment set detail = ?, rate = ? where access = ? and package_name = ?');
         $stmt->bind_param('sdss',$detail,$rate,$access,$packageName);
         $success = $stmt->execute();
         $stmt->close();

@@ -19,7 +19,7 @@ class CommentController
 
     private function calculateData(string $keyData, string $responseCode, string $data,bool $valid)
     {
-        $array = array('responseCode' => $responseCode);
+        $array = array('responseCode' => $responseCode, 'data' => $data);
 
         if (json_decode($data,true) == null)
         {
@@ -48,7 +48,7 @@ class CommentController
         {
             $decrypted = json_decode($this->securityManager->decryptAes($data),true);
 
-            if ($decrypted != null && strlen($decrypted['access']) > 80 && strlen($decrypted['access']) < 96 && strlen($decrypted['packageName']) > 0 && $decrypted['offset'] !== null )
+            if ($decrypted != null && ((strlen($decrypted['access']) > 80 && strlen($decrypted['access']) < 96) || $decrypted['access'] === null) && strlen($decrypted['packageName']) > 0 && $decrypted['offset'] !== null )
             {
                 $offset = $decrypted['offset'];
                 settype($offset,'int');

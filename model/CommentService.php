@@ -14,7 +14,7 @@ class CommentService
     }
 
 
-    public function getComments(string $access,string $packageName,int $offset)
+    public function getComments(?string $access,string $packageName,int $offset)
     {
         if ($access == null)
         {

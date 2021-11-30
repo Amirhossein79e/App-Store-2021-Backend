@@ -21,24 +21,25 @@ class DownloadManager
 
             if ($decrypted != null && strlen($decrypted['packageName']) > 0)
             {
-
                 $path = __DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'apk'.DIRECTORY_SEPARATOR.$decrypted['packageName'].'.apk';
 
                 if (file_exists($path))
                 {
                     header('Content-Type: application/octet-stream');
-                    header('Content-Length: ' . filesize($path));
+                    header('My-Content-length: '.filesize($path));
 
-                    $file = fopen($path, 'rb');
+                    $file = fopen($path, 'r');
 
-                    while (feof($file))
+                    while (!feof($file))
                     {
-                        $buffer = fread($file, 1048576);
-                        $b64 = base64_encode($this->securityManager->encryptAes($data,$buffer));
-                        echo $b64;
+                        $buffer = fread($file, 2048);
+                        //$b64 = base64_encode($this->securityManager->encryptAes($data,$buffer));
+                        //$b64 = $this->securityManager->encryptAes($data,$buffer);
+                        echo $buffer;
                         ob_flush();
                         flush();
                     }
+                    fclose($file);
 
                 }
             }

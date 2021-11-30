@@ -271,7 +271,7 @@ class AppController
 
             if ($decrypted != null && strlen($decrypted['query']) > 0 && $decrypted['offset'] !== null)
             {
-                $result = $this->service->getTitlesSearch($decrypted['offset'].$decrypted['query']);
+                $result = $this->service->getAppsSearch($decrypted['offset'],$decrypted['query']);
                 switch ($result)
                 {
                     case "-1":

@@ -9,7 +9,6 @@ class AppRepository extends Repository
 {
     private $mysqli;
 
-
     public function __construct()
     {
         parent::__construct();
@@ -30,7 +29,7 @@ class AppRepository extends Repository
             {
                 if ($row['type'] == 'row')
                 {
-                    array_push($r,array('category'=>$row['category'],'categoryName'=>$row['category_name']));
+                    array_push($r,array('category'=>$row['category'],'categoryName'=>$row['category_name'],'categoryNameEn'=>$row['category_name_en']));
 
                 }else if ($row['type'] == 'slider')
                 {
@@ -129,7 +128,7 @@ class AppRepository extends Repository
     }
 
 
-    public function getApp(string $packageName) : string
+     public function getApp(string $packageName) : string
     {
         $stmt = new \mysqli_stmt($this->mysqli,'select * from app where package_name = ? limit 1');
         $stmt->bind_param('s',$packageName);
@@ -140,7 +139,6 @@ class AppRepository extends Repository
             if ($result->num_rows>0)
             {
                 $row = $result->fetch_assoc();
-                $mainResult = json_encode($row,JSON_UNESCAPED_UNICODE);
                 $rateStr = $this->getRatings($packageName);
                 if ($rateStr == '-1')
                 {
@@ -148,6 +146,7 @@ class AppRepository extends Repository
                 }else
                 {
                     $row['rate'] = $rateStr;
+                    $mainResult = json_encode($row,JSON_UNESCAPED_UNICODE);
                 }
             }else
             {
@@ -168,11 +167,13 @@ class AppRepository extends Repository
     {
         if (preg_match("/[^\x{0600}-\x{06FF}\s]+$/u",$query) > 0)
         {
-            $stmt = new \mysqli_stmt($this->mysqli,'select name_fa from app where name_fa like %?% or name_en like %?% or tag like %?%');
+            $stmt = new \mysqli_stmt($this->mysqli,'select name_fa from app where name_fa like ? or name_en like ? or tag like ? limit 7');
         }else
         {
-            $stmt = new \mysqli_stmt($this->mysqli,'select name_en from app where name_fa like %?% or name_en like %?% or tag like %?%');
+            $stmt = new \mysqli_stmt($this->mysqli,'select name_en from app where name_fa like ? or name_en like ? or tag like ? limit 7');
         }
+
+        $query = '%'.$query.'%';
 
         $stmt->bind_param('sss',$query,$query,$query);
         $success = $stmt->execute();
@@ -198,7 +199,10 @@ class AppRepository extends Repository
 
     public function getAppsSearch(int $offset, string $query) : string
     {
-        $stmt = new \mysqli_stmt($this->mysqli,'select package_name,name_fa,name_en,dev_fa,dev_en from app where name_fa like %?% or name_en like %?% or tag like %?% limit 10 offset '.$offset);
+        $stmt = new \mysqli_stmt($this->mysqli,'select package_name,name_fa,name_en,dev_fa,dev_en from app where name_fa like ? or name_en like ? or tag like ? limit 10 offset '.$offset);
+
+        $query = '%'.$query.'%';
+
         $stmt->bind_param('sss',$query,$query,$query);
         $success = $stmt->execute();
         if ($success)
@@ -278,19 +282,21 @@ class AppRepository extends Repository
 
             if ($result->num_rows > 0)
             {
-                $i = 0;
 
                 while ($row = $result->fetch_assoc())
                 {
-                    $rate = $row['rate'];
+                    $rateRow = $row['rate'];
                     settype($rate,'float');
-                    $rate += $rate;
-                    $i++;
+                    $rate += $rateRow;
                 }
 
-                $rating = $rate/$i;
+                $rating = $rate/$result->num_rows;
 
+            }else
+            {
+               $rating = 0.0;
             }
+
             settype($rating,'string');
             $mainResult = $rating;
 

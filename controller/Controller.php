@@ -9,11 +9,13 @@ class Controller
 {
     private $service;
     private $securityManager;
+    private $notificationManager;
 
     public function __construct()
     {
         $this->service = new model\Service();
         $this->securityManager = utils\SecurityManager::getInstance();
+        $this->notificationManager = utils\NotificationPushManager::getInstance();
     }
 
 
@@ -55,6 +57,7 @@ class Controller
                 {
                     $mainResult = 1;
                     $message = 'فرایند با موفقیت اجرا شد';
+                    $this->notificationManager->initNotification($decrypted['token']);
                 }else
                     {
                     $mainResult = -1;
@@ -140,6 +143,7 @@ class Controller
                 default:
                     $mainResult = 1;
                     $message = $result;
+                    $this->notificationManager->signUpNotification($decrypted['token']);
                     break;
             }
 
@@ -186,6 +190,7 @@ class Controller
                     default:
                         $mainResult = 1;
                         $message = $result;
+                        $this->notificationManager->signInNotification(json_decode($result,true)['token']);
                         break;
                 }
             } else
