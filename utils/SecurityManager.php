@@ -51,7 +51,8 @@ class SecurityManager
 
         array_push($aesDetail,
             $this->decryptRsa(base64_decode($array[0])),
-            $this->decryptRsa(base64_decode($array[1])));
+            $this->decryptRsa(base64_decode($array[1]))
+        );
 
         return $aesDetail;
     }
@@ -79,7 +80,7 @@ class SecurityManager
     private function decryptRsa(string $data)
     {
         $decryptedData = null;
-        openssl_private_decrypt($data,$decryptedData,$this->getPrivateKey(),OPENSSL_PKCS1_PADDING);
+        openssl_private_decrypt($data,$decryptedData,$this->getPrivateKey());
         return $decryptedData;
     }
 
